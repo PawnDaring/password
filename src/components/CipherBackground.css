@@ -1,0 +1,112 @@
+.cipher-background {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: #000000;
+}
+
+/* Jester background image */
+.jester-bg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 260px;
+  height: 260px;
+  background: url('/jester.png') center/contain no-repeat;
+  opacity: 0.12;
+  filter: blur(1px);
+  pointer-events: none;
+  animation: jesterPulse 6s ease-in-out infinite alternate;
+}
+
+@keyframes jesterPulse {
+  0% { opacity: 0.10; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0.18; transform: translate(-50%, -50%) scale(1.03); }
+}
+
+/* Neon green glow — left side */
+.glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+}
+
+.glow-green {
+  width: 400px;
+  height: 400px;
+  left: -50px;
+  top: 30%;
+  background: radial-gradient(
+    circle,
+    rgba(180, 255, 0, 0.2) 0%,
+    rgba(180, 255, 0, 0.08) 40%,
+    transparent 70%
+  );
+  animation: glowDrift 8s ease-in-out infinite alternate;
+}
+
+/* Magenta/purple glow — right side */
+.glow-magenta {
+  width: 400px;
+  height: 400px;
+  right: -50px;
+  top: 30%;
+  background: radial-gradient(
+    circle,
+    rgba(233, 68, 200, 0.2) 0%,
+    rgba(153, 51, 255, 0.1) 40%,
+    transparent 70%
+  );
+  animation: glowDrift 10s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes glowDrift {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(20px, -30px) scale(1.15);
+  }
+}
+
+/* Floating cipher characters */
+.cipher-char {
+  position: absolute;
+  font-family: "SF Mono", "Fira Code", "Cascadia Code", monospace;
+  pointer-events: none;
+  user-select: none;
+  animation: drift linear infinite;
+  will-change: transform;
+}
+
+/* Alternate green, purple, and white cipher chars */
+.cipher-char:nth-child(3n) {
+  color: rgba(180, 255, 0, 0.4);
+}
+.cipher-char:nth-child(3n+1) {
+  color: rgba(200, 80, 255, 0.35);
+}
+.cipher-char:nth-child(3n+2) {
+  color: rgba(255, 255, 255, 0.2);
+}
+
+@keyframes drift {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(var(--drift-x), calc(var(--drift-y) * 0.5)) rotate(5deg);
+  }
+  50% {
+    transform: translate(calc(var(--drift-x) * -0.5), var(--drift-y)) rotate(-3deg);
+  }
+  75% {
+    transform: translate(calc(var(--drift-x) * 0.7), calc(var(--drift-y) * -0.3)) rotate(4deg);
+  }
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+}
