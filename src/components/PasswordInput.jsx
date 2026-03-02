@@ -120,20 +120,20 @@ export default function PasswordInput({
           <span className="cursor" />
         </div>
 
-        {/* Hidden real input for physical keyboard capture (desktop only) */}
-        <input
-          ref={inputRef}
-          className="hidden-input"
-          type="text"
-          autoFocus={!isTouchDevice}
-          readOnly={isTouchDevice}
-          inputMode={isTouchDevice ? "none" : undefined}
-          onKeyDown={handleKeyDown}
-          value=""
-          onChange={() => {}}
-          disabled={gameStatus !== "playing"}
-          aria-label="Password input"
-        />
+        {/* Hidden input for physical keyboard capture (desktop only) */}
+        {!isTouchDevice && (
+          <input
+            ref={inputRef}
+            className="hidden-input"
+            type="text"
+            autoFocus
+            onKeyDown={handleKeyDown}
+            value=""
+            onChange={() => {}}
+            disabled={gameStatus !== "playing"}
+            aria-label="Password input"
+          />
+        )}
 
         <button
           className="submit-btn"
