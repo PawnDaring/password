@@ -57,7 +57,7 @@ export default function GameHUD({
 
       {gameStatus === "playing" && (
         <p className="hint-text">
-          Type your guess... watch for the clues
+          
         </p>
       )}
     </div>

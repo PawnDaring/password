@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
+import VirtualKeyboard from "./VirtualKeyboard";
 import "./PasswordInput.css";
 
 export default function PasswordInput({
@@ -34,49 +35,64 @@ export default function PasswordInput({
     });
   }, [currentInput]);
 
+  // Shared logic for adding a character (used by both physical and virtual keyboard)
+  const addChar = useCallback(
+    (char) => {
+      if (gameStatus !== "playing") return;
+      const newInput = currentInput + char;
+
+      const charIndex = displayChars.length;
+      setDisplayChars((prev) => [...prev, { char, masked: false }]);
+
+      const timer = setTimeout(() => {
+        setDisplayChars((prev) =>
+          prev.map((c, i) =>
+            i === charIndex ? { ...c, masked: true } : c
+          )
+        );
+      }, 300);
+      timersRef.current.push(timer);
+
+      onCharInput(newInput);
+    },
+    [gameStatus, currentInput, displayChars.length, onCharInput]
+  );
+
+  const doBackspace = useCallback(() => {
+    if (gameStatus !== "playing" || currentInput.length === 0) return;
+    const newInput = currentInput.slice(0, -1);
+    setDisplayChars((prev) => prev.slice(0, -1));
+    onDelete(newInput);
+  }, [gameStatus, currentInput, onDelete]);
+
+  const doSubmit = useCallback(() => {
+    if (gameStatus !== "playing") return;
+    onSubmit();
+  }, [gameStatus, onSubmit]);
+
   const handleKeyDown = useCallback(
     (e) => {
       if (gameStatus !== "playing") return;
 
       if (e.key === "Enter") {
         e.preventDefault();
-        onSubmit();
+        doSubmit();
         return;
       }
 
       if (e.key === "Backspace") {
         e.preventDefault();
-        if (currentInput.length > 0) {
-          const newInput = currentInput.slice(0, -1);
-          setDisplayChars((prev) => prev.slice(0, -1));
-          onDelete(newInput);
-        }
+        doBackspace();
         return;
       }
 
       // Only allow single printable characters
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
-        const char = e.key;
-        const newInput = currentInput + char;
-
-        // Show real character briefly, then mask
-        const charIndex = displayChars.length;
-        setDisplayChars((prev) => [...prev, { char, masked: false }]);
-
-        const timer = setTimeout(() => {
-          setDisplayChars((prev) =>
-            prev.map((c, i) =>
-              i === charIndex ? { ...c, masked: true } : c
-            )
-          );
-        }, 300);
-        timersRef.current.push(timer);
-
-        onCharInput(newInput);
+        addChar(e.key);
       }
     },
-    [gameStatus, currentInput, displayChars.length, onCharInput, onDelete, onSubmit]
+    [gameStatus, addChar, doBackspace, doSubmit]
   );
 
   return (
@@ -131,6 +147,13 @@ export default function PasswordInput({
           </svg>
         </button>
       </div>
+
+      <VirtualKeyboard
+        onKey={addChar}
+        onBackspace={doBackspace}
+        onEnter={doSubmit}
+        disabled={gameStatus !== "playing"}
+      />
     </div>
   );
 }
