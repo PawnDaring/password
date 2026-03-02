@@ -13,10 +13,16 @@ export default function PasswordInput({
   const inputRef = useRef(null);
   const timersRef = useRef([]);
 
-  // Focus the hidden input on mount and clicks
+  // Detect touch device (no hover + coarse pointer = mobile/tablet)
+  const isTouchDevice = typeof window !== 'undefined' &&
+    window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+
+  // Focus the hidden input on mount (desktop only)
   useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
+    if (!isTouchDevice) {
+      inputRef.current?.focus();
+    }
+  }, [isTouchDevice]);
 
   // Cleanup timers on unmount
   useEffect(() => {
@@ -96,7 +102,7 @@ export default function PasswordInput({
   );
 
   return (
-    <div className="password-input-wrapper" onClick={() => inputRef.current?.focus()}>
+    <div className="password-input-wrapper" onClick={() => { if (!isTouchDevice) inputRef.current?.focus(); }}>
       <div className="password-input-glow" />
       <div className="password-input-container">
         <div className="input-display">
@@ -114,12 +120,14 @@ export default function PasswordInput({
           <span className="cursor" />
         </div>
 
-        {/* Hidden real input for keyboard capture */}
+        {/* Hidden real input for physical keyboard capture (desktop only) */}
         <input
           ref={inputRef}
           className="hidden-input"
           type="text"
-          autoFocus
+          autoFocus={!isTouchDevice}
+          readOnly={isTouchDevice}
+          inputMode={isTouchDevice ? "none" : undefined}
           onKeyDown={handleKeyDown}
           value=""
           onChange={() => {}}
