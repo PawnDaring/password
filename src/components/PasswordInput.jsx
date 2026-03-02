@@ -13,16 +13,10 @@ export default function PasswordInput({
   const inputRef = useRef(null);
   const timersRef = useRef([]);
 
-  // Detect touch device (no hover + coarse pointer = mobile/tablet)
-  const isTouchDevice = typeof window !== 'undefined' &&
-    window.matchMedia('(hover: none) and (pointer: coarse)').matches;
-
-  // Focus the hidden input on mount (desktop only)
+  // Focus the hidden input on mount (for physical keyboard users)
   useEffect(() => {
-    if (!isTouchDevice) {
-      inputRef.current?.focus();
-    }
-  }, [isTouchDevice]);
+    inputRef.current?.focus();
+  }, []);
 
   // Cleanup timers on unmount
   useEffect(() => {
@@ -102,7 +96,7 @@ export default function PasswordInput({
   );
 
   return (
-    <div className="password-input-wrapper" onClick={() => { if (!isTouchDevice) inputRef.current?.focus(); }}>
+    <div className="password-input-wrapper" onClick={() => inputRef.current?.focus()}>
       <div className="password-input-glow" />
       <div className="password-input-container">
         <div className="input-display">
@@ -120,20 +114,22 @@ export default function PasswordInput({
           <span className="cursor" />
         </div>
 
-        {/* Hidden input for physical keyboard capture (desktop only) */}
-        {!isTouchDevice && (
-          <input
-            ref={inputRef}
-            className="hidden-input"
-            type="text"
-            autoFocus
-            onKeyDown={handleKeyDown}
-            value=""
-            onChange={() => {}}
-            disabled={gameStatus !== "playing"}
-            aria-label="Password input"
-          />
-        )}
+        {/* Hidden input for physical keyboard capture — inputMode="none" prevents mobile virtual keyboards */}
+        <input
+          ref={inputRef}
+          className="hidden-input"
+          type="text"
+          inputMode="none"
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck={false}
+          onKeyDown={handleKeyDown}
+          value=""
+          onChange={() => {}}
+          disabled={gameStatus !== "playing"}
+          aria-label="Password input"
+        />
 
         <button
           className="submit-btn"
