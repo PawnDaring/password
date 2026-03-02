@@ -46,15 +46,17 @@ function App() {
           />
         </div>
 
-        <div className="bottom-container">
-          <PasswordInput
-            currentInput={currentInput}
-            gameStatus={gameStatus}
-            onCharInput={handleCharInput}
-            onDelete={handleDelete}
-            onSubmit={onSubmit}
-          />
-        </div>
+        {gameStatus === "playing" && (
+          <div className="bottom-container">
+            <PasswordInput
+              currentInput={currentInput}
+              gameStatus={gameStatus}
+              onCharInput={handleCharInput}
+              onDelete={handleDelete}
+              onSubmit={onSubmit}
+            />
+          </div>
+        )}
       </div>
 
       <EmojiFeedback feedbackQueue={feedbackQueue} />
